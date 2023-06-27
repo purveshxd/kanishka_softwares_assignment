@@ -22,7 +22,7 @@ class LoginScreen extends StatelessWidget {
 
         if (resp) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) =>  const HomeScreen(),
+            builder: (context) => HomeScreen(),
           ));
         }
       } catch (e) {

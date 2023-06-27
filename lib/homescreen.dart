@@ -3,19 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kanishka_softwares_assignment/proivders/all_providers.dart';
 import 'package:location/location.dart';
 
 import 'package:kanishka_softwares_assignment/screens/auth_screen.dart';
 import 'package:kanishka_softwares_assignment/service/shared_pref_auth.dart';
 
 class HomeScreen extends StatefulWidget {
-  final bool isDarktheme;
-  final void Function(bool)? onChanged;
-  const HomeScreen({
+  HomeScreen({
     Key? key,
-    this.isDarktheme = true,
-    this.onChanged,
   }) : super(key: key);
 
   @override
@@ -56,14 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
       if (image == null) return;
       var tempImage = XFile(image.path).path;
       var currentLocation = await getLocation();
-      setState(() {
-        lat = currentLocation.latitude;
-        long = currentLocation.longitude;
-      });
+      setState(() {});
+      lat = currentLocation.latitude;
+      long = currentLocation.longitude;
       _authDatabase.setLocation(lat, long);
       _authDatabase.setImage(tempImage);
     } on PlatformException catch (e) {
-      debugPrint('Failed to pick image: $e');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
     }
   }
 
@@ -72,13 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
     List<String>? location = _authDatabase.getLocation();
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(_authDatabase.getUsername()),
         actions: [
-          Switch(
-            value: widget.isDarktheme,
-            onChanged: widget.onChanged,
-          )
+          Consumer(builder: (context, ref, child) {
+            return Switch(
+              value: ref.watch(themeProvider),
+              onChanged: (value) {
+                ref.refresh(themeProvider.notifier).update((state) => value);
+              },
+            );
+          }),
+          IconButton(
+              onPressed: () => logout(context), icon: const Icon(Icons.logout))
         ],
       ),
       body: Center(

@@ -27,7 +27,9 @@ class RegistrationScreen extends ConsumerWidget {
           password: passwordController.text);
 
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
+        builder: (context) => HomeScreen(
+       
+        ),
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

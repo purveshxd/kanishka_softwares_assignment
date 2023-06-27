@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kanishka_softwares_assignment/homescreen.dart';
+import 'package:kanishka_softwares_assignment/proivders/all_providers.dart';
 
 import 'package:kanishka_softwares_assignment/screens/auth_screen.dart';
 import 'package:kanishka_softwares_assignment/style.dart';
@@ -25,12 +26,13 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+bool isDarkTheme = false;
+
 class _MyAppState extends State<MyApp> {
-  bool isDarkTheme = false;
   @override
   void initState() {
     getLocationPermission();
-
+    isDarkTheme = false;
     isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     super.initState();
   }
@@ -58,7 +60,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  onChanged(value) {
+  void onChanged(value) {
     setState(() {
       isDarkTheme = value;
     });
@@ -66,15 +68,16 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: Style.themeData(isDarkTheme, context),
-      home: isLoggedIn
-          ? HomeScreen(
-              onChanged: (value) => onChanged(value),
-              isDarktheme: isDarkTheme,
-            )
-          : const AuthScreen(),
-    );
+    return Consumer(builder: (context, ref, child) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: Style.themeData(ref.watch(themeProvider), context),
+        home: isLoggedIn
+            ? HomeScreen(
+              
+              )
+            : const AuthScreen(),
+      );
+    });
   }
 }
